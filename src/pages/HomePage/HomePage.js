@@ -1,30 +1,47 @@
-import styled from "styled-components"
+import styled from "styled-components";
+import {Link, useParams} from "react-router-dom";
+import axios from "axios";
+import { useState, useEffect } from "react";
 
 export default function HomePage() {
+
+    const [films, setFilms] = useState([]);
+
+    useEffect(() => {
+
+        const promise = axios.get("https://mock-api.driven.com.br/api/v8/cineflex/movies");
+
+        promise.then((res) => {
+            console.log(res.data)
+            setFilms(res.data)
+        });
+        promise.catch((err) => console.log(err.response.data));
+    }, []);
+
     return (
         <PageContainer>
             Selecione o filme
 
             <ListContainer>
-                <MovieContainer>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster"/>
-                </MovieContainer>
 
-                <MovieContainer>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster"/>
-                </MovieContainer>
-
-                <MovieContainer>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster"/>
-                </MovieContainer>
-
-                <MovieContainer>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster"/>
-                </MovieContainer>
+                {films.map((f) => <Film
+                    key={f.id}
+                    poster={f.posterURL}
+                    id = {f.id} />)}
             </ListContainer>
 
         </PageContainer>
     )
+}
+
+function Film({ poster, id }) {
+    return (
+        <Link to={`/sessoes/${id}`}>
+            <MovieContainer>
+                <img src={poster}></img>
+            </MovieContainer>
+        </Link>
+    );
 }
 
 const PageContainer = styled.div`
@@ -37,6 +54,7 @@ const PageContainer = styled.div`
     color: #293845;
     margin-top: 30px;
     padding-top: 70px;
+    flex-wrap: wrap;
 `
 const ListContainer = styled.div`
     width: 330px;
