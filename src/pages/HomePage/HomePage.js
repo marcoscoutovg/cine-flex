@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 
 export default function HomePage() {
 
-    const [films, setFilms] = useState([]);
+    const [movies, setMovies] = useState([]);
 
     useEffect(() => {
 
@@ -13,7 +13,7 @@ export default function HomePage() {
 
         promise.then((res) => {
             console.log(res.data)
-            setFilms(res.data)
+            setMovies(res.data)
         });
         promise.catch((err) => console.log(err.response.data));
     }, []);
@@ -23,21 +23,20 @@ export default function HomePage() {
             Selecione o filme
 
             <ListContainer>
-
-                {films.map((f) => <Film
+                {movies.map((f) => <Movie
                     key={f.id}
                     poster={f.posterURL}
-                    id = {f.id} />)}
+                    movieId = {f.id} />)}
             </ListContainer>
 
         </PageContainer>
     )
 }
 
-function Film({ poster, id }) {
+function Movie({ poster, movieId }) {
     return (
-        <Link to={`/sessoes/${id}`}>
-            <MovieContainer>
+        <Link to={`/sessoes/${movieId}`}>
+            <MovieContainer data-test="movie">
                 <img src={poster}></img>
             </MovieContainer>
         </Link>
