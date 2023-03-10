@@ -1,17 +1,42 @@
+import { useParams } from "react-router-dom"
 import styled from "styled-components"
+import axios from "axios";
+import { useState, useEffect } from "react";
+import { SELECIONADO, BORDASELECIONADO, DISPONIVEL, BORDADISPONIVEL, INDISPONIVEL, BORDAINDISPONIVEL } from "../../colors";
 
 export default function SeatsPage() {
+
+    const { idSessao } = useParams();
+    const [infoSeats, setInfoSeats] = useState([]);
+    const [numSeats, setNumSeats] = useState([]);
+
+
+    useEffect(() => {
+        const promise = axios.get(`https://mock-api.driven.com.br/api/v8/cineflex/showtimes/${idSessao}/seats`);
+
+        promise.then(res => {
+            setInfoSeats(res.data)
+            console.log(res.data)
+            setNumSeats(res.data.seats)
+            console.log('funcionou')
+        })
+
+        promise.catch(err => console.log('erro'));
+    }, []);
 
     return (
         <PageContainer>
             Selecione o(s) assento(s)
 
             <SeatsContainer>
-                <SeatItem>01</SeatItem>
-                <SeatItem>02</SeatItem>
-                <SeatItem>03</SeatItem>
-                <SeatItem>04</SeatItem>
-                <SeatItem>05</SeatItem>
+                {numSeats.map(s =>
+                    <SeatItem
+                        data-test="seat"
+                        key={s.id}
+                        selected={s.isAvailable}>
+
+                        {s.name}
+                    </SeatItem>)}
             </SeatsContainer>
 
             <CaptionContainer>
@@ -39,13 +64,13 @@ export default function SeatsPage() {
                 <button>Reservar Assento(s)</button>
             </FormContainer>
 
-            <FooterContainer>
+            <FooterContainer data-test="footer">
                 <div>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster" />
+                    <img src={infoSeats.movie.posterURL} alt="poster" />
                 </div>
                 <div>
-                    <p>Tudo em todo lugar ao mesmo tempo</p>
-                    <p>Sexta - 14h00</p>
+                    <p>{infoSeats.movie.title}</p>
+                    <p>{infoSeats.day.weekday} - {infoSeats.name}</p>
                 </div>
             </FooterContainer>
 
@@ -113,8 +138,8 @@ const CaptionItem = styled.div`
     font-size: 12px;
 `
 const SeatItem = styled.div`
-    border: 1px solid blue;         // Essa cor deve mudar
-    background-color: lightblue;    // Essa cor deve mudar
+    border: 1px solid ${p => p.selected === true ? DISPONIVEL : INDISPONIVEL};         // Essa cor deve mudar
+    background-color: ${P => P.selected === true ? DISPONIVEL : INDISPONIVEL};    // Essa cor deve mudar
     height: 25px;
     width: 25px;
     border-radius: 25px;
