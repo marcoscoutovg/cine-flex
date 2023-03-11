@@ -1,13 +1,7 @@
-const SELECIONADO = "#1AAE9E";
+const COLORS = [
+    {status: "disponível", color: "#C3CFD9",  border: "#808F9D"},
+    {status: "indisponível", color: "#FBE192", border: "#F7C52B"},
+    {status: "selecionado", color: "#1AAE9E", border: "#0E7D71"}
+];
 
-const BORDASELECIONADO = "#0E7D71";
-
-const DISPONIVEL = "#C3CFD9";
-
-const BORDADISPONIVEL = "#808F9D";
-
-const INDISPONIVEL = "#FBE192";
-
-const BORDAINDISPONIVEL = "#F7C52B";
-
-export {SELECIONADO, BORDASELECIONADO, DISPONIVEL, BORDADISPONIVEL, INDISPONIVEL, BORDAINDISPONIVEL};
+export default COLORS;

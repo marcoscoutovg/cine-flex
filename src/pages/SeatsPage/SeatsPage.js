@@ -1,28 +1,53 @@
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import styled from "styled-components"
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { SELECIONADO, BORDASELECIONADO, DISPONIVEL, BORDADISPONIVEL, INDISPONIVEL, BORDAINDISPONIVEL } from "../../colors";
+import COLORS from "../../colors";
 
 export default function SeatsPage() {
 
     const { idSessao } = useParams();
     const [infoSeats, setInfoSeats] = useState([]);
     const [numSeats, setNumSeats] = useState([]);
-
+    const [movie, setMovie] = useState([]);
+    const [day, setDay] = useState([]);
+    const [selected, setSelected] = useState([]);
+    const [name, setName] = useState("");
+    const [cpf, setCpf] = useState("");
+    const [ids, setIds] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const promise = axios.get(`https://mock-api.driven.com.br/api/v8/cineflex/showtimes/${idSessao}/seats`);
 
         promise.then(res => {
             setInfoSeats(res.data)
-            console.log(res.data)
+            setMovie(res.data.movie)
+            setDay(res.data.day)
             setNumSeats(res.data.seats)
             console.log('funcionou')
-        })
+            console.log(res.data.seats)
+        });
 
-        promise.catch(err => console.log('erro'));
+        promise.catch(err => console.log(err.response.data));
     }, []);
+
+    function seatSelected(s) {
+        if (!ids.includes(s.id)) {
+            setIds([...ids, s.id]);
+        }
+    }
+
+    console.log([ids, name, cpf]);
+
+    function sendInfo(e) {
+        e.preventDefault();
+        const body = { name, cpf, ids };
+
+        const promise = axios.post("https://mock-api.driven.com.br/api/v8/cineflex/seats/book-many", body);
+        promise.then(navigate("/sucesso"));
+        promise.catch(console.log('não'))
+    }
 
     return (
         <PageContainer>
@@ -33,7 +58,8 @@ export default function SeatsPage() {
                     <SeatItem
                         data-test="seat"
                         key={s.id}
-                        selected={s.isAvailable}>
+                        selected={s.isAvailable}
+                        onClick={() => seatSelected(s)}>
 
                         {s.name}
                     </SeatItem>)}
@@ -41,36 +67,51 @@ export default function SeatsPage() {
 
             <CaptionContainer>
                 <CaptionItem>
-                    <CaptionCircle />
+                    <CaptionCircle status={COLORS[2].status} />
                     Selecionado
                 </CaptionItem>
                 <CaptionItem>
-                    <CaptionCircle />
+                    <CaptionCircle status={COLORS[0].status} />
                     Disponível
                 </CaptionItem>
                 <CaptionItem>
-                    <CaptionCircle />
+                    <CaptionCircle status={COLORS[1].status} />
                     Indisponível
                 </CaptionItem>
             </CaptionContainer>
 
-            <FormContainer>
-                Nome do Comprador:
-                <input placeholder="Digite seu nome..." />
+            <FormContainer onSubmit={sendInfo}>
+                <label htmlFor="name">Nome do Comprador:</label>
+                <input
+                    id="name"
+                    placeholder="Digite seu nome..."
+                    required
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    data-test="client-name" />
 
-                CPF do Comprador:
-                <input placeholder="Digite seu CPF..." />
+                <label htmlFor="cpf">CPF do Comprador:</label>
+                <input
+                    id="cpf"
+                    placeholder="Digite seu CPF..."
+                    required
+                    value={cpf}
+                    onChange={e => setCpf(e.target.value)} 
+                    data-test="client-cpf"/>
 
-                <button>Reservar Assento(s)</button>
+                <button
+                    data-test="book-seat-btn"
+                    type="submit"
+                >Reservar Assento(s)</button>
             </FormContainer>
 
             <FooterContainer data-test="footer">
                 <div>
-                    <img src={infoSeats.movie.posterURL} alt="poster" />
+                    <img src={movie.posterURL} alt={movie.title} />
                 </div>
                 <div>
-                    <p>{infoSeats.movie.title}</p>
-                    <p>{infoSeats.day.weekday} - {infoSeats.name}</p>
+                    <p>{movie.title}</p>
+                    <p>{day.weekday} - {infoSeats.name}</p>
                 </div>
             </FooterContainer>
 
@@ -99,7 +140,7 @@ const SeatsContainer = styled.div`
     justify-content: center;
     margin-top: 20px;
 `
-const FormContainer = styled.div`
+const FormContainer = styled.form`
     width: calc(100vw - 40px); 
     display: flex;
     flex-direction: column;
@@ -121,8 +162,10 @@ const CaptionContainer = styled.div`
     margin: 20px;
 `
 const CaptionCircle = styled.div`
-    border: 1px solid blue;         // Essa cor deve mudar
-    background-color: lightblue;    // Essa cor deve mudar
+    border: 1px solid ${p => p.status === "disponível" ? COLORS[0].border :
+        (p.status === "indisponível" ? COLORS[1].border : COLORS[2].border)};         // Essa cor deve mudar
+    background-color: ${p => p.status === "disponível" ? COLORS[0].color :
+        (p.status === "indisponível" ? COLORS[1].color : COLORS[2].color)};    // Essa cor deve mudar
     height: 25px;
     width: 25px;
     border-radius: 25px;
@@ -138,8 +181,8 @@ const CaptionItem = styled.div`
     font-size: 12px;
 `
 const SeatItem = styled.div`
-    border: 1px solid ${p => p.selected === true ? DISPONIVEL : INDISPONIVEL};         // Essa cor deve mudar
-    background-color: ${P => P.selected === true ? DISPONIVEL : INDISPONIVEL};    // Essa cor deve mudar
+    border: 1px solid ${p => p.selected ? COLORS[0].border : COLORS[1].border};         // Essa cor deve mudar
+    background-color: ${p => p.selected ? COLORS[0].color : COLORS[1].color};    // Essa cor deve mudar
     height: 25px;
     width: 25px;
     border-radius: 25px;
