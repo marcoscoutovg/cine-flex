@@ -8,6 +8,14 @@ import { useState, useEffect } from "react";
 
 export default function App() {
 
+    const [movie, setMovie] = useState([]);
+    const [day, setDay] = useState([]);
+    const [infoSeats, setInfoSeats] = useState([]);
+    const [name, setName] = useState("");
+    const [cpf, setCpf] = useState("");
+    const [idSeatSession, setIdSeatSession] = useState([]);
+    const [ids, setIds] = useState([]);
+
     return (
         <BrowserRouter>
             <NavContainer>CINEFLEX</NavContainer>
@@ -15,12 +23,28 @@ export default function App() {
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/sessoes/:idFilme" element={<SessionsPage />} />
-                <Route path="/assentos/:idSessao" element={<SeatsPage />} />
-                <Route path="/sucesso" element={<SuccessPage />} />
+
+                <Route path="/assentos/:idSessao" element={<SeatsPage
+                    movie={movie} setMovie={setMovie}
+                    day={day} setDay={setDay}
+                    infoSeats={infoSeats} setInfoSeats={setInfoSeats}
+                    name={name} setName={setName}
+                    cpf={cpf} setCpf={setCpf}
+                    idSeatSession={idSeatSession} setIdSeatSession={setIdSeatSession}
+                    ids={ids} setIds={setIds} />} />
+
+                <Route path="/sucesso" element={<SuccessPage
+                    movie={movie} setMovie={setMovie}
+                    day={day} setDay={setDay}
+                    infoSeats={infoSeats} setInfoSeats={setInfoSeats}
+                    name={name} setName={setName}
+                    cpf={cpf} setCpf={setCpf}
+                    idSeatSession={idSeatSession} setIdSeatSession={setIdSeatSession}
+                    ids={ids} setIds={setIds} />} />
             </Routes>
 
         </BrowserRouter>
-    )
+    );
 }
 
 const NavContainer = styled.div`
@@ -39,4 +63,4 @@ const NavContainer = styled.div`
         text-decoration: none;
         color: #E8833A;
     }
-`
+`;

@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled from "styled-components";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -12,15 +12,15 @@ export default function SessionsPage() {
 
     useEffect(() => {
 
-        const promise = axios.get(`https://mock-api.driven.com.br/api/v8/cineflex/movies/${idFilme}/showtimes`)
+        const promise = axios.get(`https://mock-api.driven.com.br/api/v8/cineflex/movies/${idFilme}/showtimes`);
 
         promise.then((res) => {
-            console.log(res.data)
-            setMovieDate(res.data.days)
-            setInfoMovie(res.data)
+            console.log(res.data);
+            setMovieDate(res.data.days);
+            setInfoMovie(res.data);
         });
         promise.catch((err) => {
-            console.log(err.response.data)
+            console.log(err.response.data);
         })
     }, []);
 
@@ -56,7 +56,7 @@ export default function SessionsPage() {
             </FooterContainer>
 
         </PageContainer>
-    )
+    );
 }
 
 function Button({ time, sessionId }) {
@@ -64,7 +64,7 @@ function Button({ time, sessionId }) {
         <Link to={`/assentos/${sessionId}`}>
             <button data-test="showtime">{time}</button>
         </Link>
-    )
+    );
 }
 
 const PageContainer = styled.div`
@@ -82,7 +82,8 @@ const PageContainer = styled.div`
         margin-top: 20px;
 
     }
-`
+`;
+
 const SessionContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -91,7 +92,8 @@ const SessionContainer = styled.div`
     font-size: 20px;
     color: #293845;
     padding: 0 20px;
-`
+`;
+
 const ButtonsContainer = styled.div`
     display: flex;
     flex-direction: row;
@@ -102,7 +104,8 @@ const ButtonsContainer = styled.div`
     a {
         text-decoration: none;
     }
-`
+`;
+
 const FooterContainer = styled.div`
     width: 100%;
     height: 120px;
@@ -140,4 +143,4 @@ const FooterContainer = styled.div`
             }
         }
     }
-`
+`;

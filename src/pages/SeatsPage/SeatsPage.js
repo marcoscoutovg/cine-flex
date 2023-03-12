@@ -1,44 +1,48 @@
-import { useNavigate, useParams } from "react-router-dom"
-import styled from "styled-components"
+import { useNavigate, useParams } from "react-router-dom";
+import styled from "styled-components";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import COLORS from "../../colors";
+import {
+    COLORAVAILABLE, BORDERAVAILABLE, UNAVAILABLECOLOR, BORDERUNAVAILABLE, SELECTEDCOLOR, SELECTEDBORDER
+} from "../../colors";
 
-export default function SeatsPage() {
+export default function SeatsPage({ movie, setMovie, day, setDay, infoSeats, setInfoSeats,
+    name, setName, cpf, setCpf, idSeatSession, setIdSeatSession, setIds, ids }) {
 
     const { idSessao } = useParams();
-    const [infoSeats, setInfoSeats] = useState([]);
     const [numSeats, setNumSeats] = useState([]);
-    const [movie, setMovie] = useState([]);
-    const [day, setDay] = useState([]);
-    const [selected, setSelected] = useState([]);
-    const [name, setName] = useState("");
-    const [cpf, setCpf] = useState("");
-    const [ids, setIds] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
         const promise = axios.get(`https://mock-api.driven.com.br/api/v8/cineflex/showtimes/${idSessao}/seats`);
 
         promise.then(res => {
-            setInfoSeats(res.data)
-            setMovie(res.data.movie)
-            setDay(res.data.day)
-            setNumSeats(res.data.seats)
-            console.log('funcionou')
-            console.log(res.data.seats)
+            setInfoSeats(res.data);
+            setMovie(res.data.movie);
+            setDay(res.data.day);
+            setNumSeats(res.data.seats);
         });
 
         promise.catch(err => console.log(err.response.data));
     }, []);
 
     function seatSelected(s) {
-        if (!ids.includes(s.id)) {
-            setIds([...ids, s.id]);
-        }
-    }
 
-    console.log([ids, name, cpf]);
+        const idSeats = [...ids, s.id];
+        const numberSeat = [...idSeatSession, s.name];
+
+        if (!ids.includes(s.id) && s.isAvailable) {
+            setIds(idSeats);
+            setIdSeatSession(numberSeat);
+        }
+
+        if (ids.includes(s.id) && s.isAvailable) {
+            setIds(idSeats.filter(m => m !== s.id));
+            setIdSeatSession(numberSeat.filter(m => m !== s.name));
+        }
+
+        !s.isAvailable && alert("Esse assento não está disponível");
+    }
 
     function sendInfo(e) {
         e.preventDefault();
@@ -46,7 +50,7 @@ export default function SeatsPage() {
 
         const promise = axios.post("https://mock-api.driven.com.br/api/v8/cineflex/seats/book-many", body);
         promise.then(navigate("/sucesso"));
-        promise.catch(console.log('não'))
+        promise.catch(console.log('erro no agendamento'));
     }
 
     return (
@@ -58,7 +62,9 @@ export default function SeatsPage() {
                     <SeatItem
                         data-test="seat"
                         key={s.id}
-                        selected={s.isAvailable}
+                        id={s.id}
+                        available={s.isAvailable}
+                        ids={ids}
                         onClick={() => seatSelected(s)}>
 
                         {s.name}
@@ -67,15 +73,21 @@ export default function SeatsPage() {
 
             <CaptionContainer>
                 <CaptionItem>
-                    <CaptionCircle status={COLORS[2].status} />
+                    <CaptionCircle
+                        color={SELECTEDCOLOR}
+                        border={SELECTEDBORDER} />
                     Selecionado
                 </CaptionItem>
                 <CaptionItem>
-                    <CaptionCircle status={COLORS[0].status} />
+                    <CaptionCircle
+                        color={COLORAVAILABLE}
+                        border={BORDERAVAILABLE} />
                     Disponível
                 </CaptionItem>
                 <CaptionItem>
-                    <CaptionCircle status={COLORS[1].status} />
+                    <CaptionCircle
+                        color={UNAVAILABLECOLOR}
+                        border={BORDERUNAVAILABLE} />
                     Indisponível
                 </CaptionItem>
             </CaptionContainer>
@@ -96,8 +108,8 @@ export default function SeatsPage() {
                     placeholder="Digite seu CPF..."
                     required
                     value={cpf}
-                    onChange={e => setCpf(e.target.value)} 
-                    data-test="client-cpf"/>
+                    onChange={e => setCpf(e.target.value)}
+                    data-test="client-cpf" />
 
                 <button
                     data-test="book-seat-btn"
@@ -116,7 +128,7 @@ export default function SeatsPage() {
             </FooterContainer>
 
         </PageContainer>
-    )
+    );
 }
 
 const PageContainer = styled.div`
@@ -130,7 +142,8 @@ const PageContainer = styled.div`
     margin-top: 30px;
     padding-bottom: 120px;
     padding-top: 70px;
-`
+`;
+
 const SeatsContainer = styled.div`
     width: 330px;
     display: flex;
@@ -139,7 +152,8 @@ const SeatsContainer = styled.div`
     align-items: center;
     justify-content: center;
     margin-top: 20px;
-`
+`;
+
 const FormContainer = styled.form`
     width: calc(100vw - 40px); 
     display: flex;
@@ -153,19 +167,21 @@ const FormContainer = styled.form`
     input {
         width: calc(100vw - 60px);
     }
-`
+`;
+
 const CaptionContainer = styled.div`
     display: flex;
     flex-direction: row;
     width: 300px;
     justify-content: space-between;
     margin: 20px;
-`
+`;
+
 const CaptionCircle = styled.div`
-    border: 1px solid ${p => p.status === "disponível" ? COLORS[0].border :
-        (p.status === "indisponível" ? COLORS[1].border : COLORS[2].border)};         // Essa cor deve mudar
-    background-color: ${p => p.status === "disponível" ? COLORS[0].color :
-        (p.status === "indisponível" ? COLORS[1].color : COLORS[2].color)};    // Essa cor deve mudar
+    border: 1px solid ${p => p.border === BORDERAVAILABLE ? BORDERAVAILABLE :
+        (p.border === SELECTEDBORDER ? SELECTEDBORDER : BORDERUNAVAILABLE)};         // Essa cor deve mudar
+    background-color: ${p => p.color === COLORAVAILABLE ? COLORAVAILABLE :
+        (p.color === UNAVAILABLECOLOR ? UNAVAILABLECOLOR : SELECTEDCOLOR)};    // Essa cor deve mudar
     height: 25px;
     width: 25px;
     border-radius: 25px;
@@ -173,16 +189,20 @@ const CaptionCircle = styled.div`
     align-items: center;
     justify-content: center;
     margin: 5px 3px;
-`
+`;
+
 const CaptionItem = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
     font-size: 12px;
-`
+`;
+
 const SeatItem = styled.div`
-    border: 1px solid ${p => p.selected ? COLORS[0].border : COLORS[1].border};         // Essa cor deve mudar
-    background-color: ${p => p.selected ? COLORS[0].color : COLORS[1].color};    // Essa cor deve mudar
+    border: 1px solid ${p => (p.available && !p.ids.includes(p.id)) ? BORDERAVAILABLE
+        : ((p.available && p.ids.includes(p.id)) ? SELECTEDBORDER : BORDERUNAVAILABLE)};         // Essa cor deve mudar
+    background-color: ${p => (p.available && !p.ids.includes(p.id)) ? COLORAVAILABLE
+        : ((p.available && p.ids.includes(p.id)) ? SELECTEDCOLOR : UNAVAILABLECOLOR)};    // Essa cor deve mudar
     height: 25px;
     width: 25px;
     border-radius: 25px;
@@ -192,7 +212,8 @@ const SeatItem = styled.div`
     align-items: center;
     justify-content: center;
     margin: 5px 3px;
-`
+`;
+
 const FooterContainer = styled.div`
     width: 100%;
     height: 120px;
@@ -230,4 +251,4 @@ const FooterContainer = styled.div`
             }
         }
     }
-`
+`;

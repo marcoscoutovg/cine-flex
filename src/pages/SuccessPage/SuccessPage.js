@@ -1,6 +1,19 @@
-import styled from "styled-components"
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
 
-export default function SuccessPage() {
+export default function SuccessPage({ setMovie, movie, setDay, day, setInfoSeats, infoSeats,
+    setName, name, setCpf, cpf, setIdSeatSession, idSeatSession, setIds, ids }) {
+
+    const navigate = useNavigate();
+
+    function backHome() {
+        navigate("/");
+        setCpf("");
+        setName("");
+        setIdSeatSession([]);
+        setIds([]);
+
+    }
 
     return (
         <PageContainer>
@@ -8,26 +21,24 @@ export default function SuccessPage() {
 
             <TextContainer data-test="movie-info">
                 <strong><p>Filme e sessão</p></strong>
-                <p>Tudo em todo lugar ao mesmo tempo</p>
-                <p>03/03/2023 - 14:00</p>
+                <p>{movie.title}</p>
+                <p>{day.weekday} - {infoSeats.name}</p>
             </TextContainer>
 
             <TextContainer data-test="seats-info">
                 <strong><p>Ingressos</p></strong>
-                <p>Assento 01</p>
-                <p>Assento 02</p>
-                <p>Assento 03</p>
+                {idSeatSession.map(id => <p key={id}>{`Assento ${id}`}</p>)}
             </TextContainer>
 
             <TextContainer data-test="client-info">
                 <strong><p>Comprador</p></strong>
-                <p>Nome: Letícia Chijo</p>
-                <p>CPF: 123.456.789-10</p>
+                <p>{`Nome: ${name}`}</p>
+                <p>{`CPF: ${cpf}`}</p>
             </TextContainer>
 
-            <button data-test="go-home-btn">Voltar para Home</button>
+            <button onClick={backHome} data-test="go-home-btn">Voltar para Home</button>
         </PageContainer>
-    )
+    );
 }
 
 const PageContainer = styled.div`
@@ -57,7 +68,8 @@ const PageContainer = styled.div`
         text-align: center;
         color: #247A6B;
     }
-`
+`;
+
 const TextContainer = styled.div`
     width: 100%;
     display: flex;
@@ -68,4 +80,4 @@ const TextContainer = styled.div`
         font-weight: bold;
         margin-bottom: 10px;
     }
-`
+`;

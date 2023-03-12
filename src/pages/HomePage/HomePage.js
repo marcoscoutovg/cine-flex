@@ -1,19 +1,18 @@
 import styled from "styled-components";
-import {Link, useParams} from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import { useState, useEffect } from "react";
 
 export default function HomePage() {
 
-    const [movies, setMovies] = useState([]);
+    const [movieList, setMovieList] = useState([]);
 
     useEffect(() => {
 
         const promise = axios.get("https://mock-api.driven.com.br/api/v8/cineflex/movies");
 
         promise.then((res) => {
-            console.log(res.data)
-            setMovies(res.data)
+            setMovieList(res.data)
         });
         promise.catch((err) => console.log(err.response.data));
     }, []);
@@ -23,14 +22,14 @@ export default function HomePage() {
             Selecione o filme
 
             <ListContainer>
-                {movies.map((f) => <Movie
+                {movieList.map((f) => <Movie
                     key={f.id}
                     poster={f.posterURL}
-                    movieId = {f.id} />)}
+                    movieId={f.id} />)}
             </ListContainer>
 
         </PageContainer>
-    )
+    );
 }
 
 function Movie({ poster, movieId }) {
@@ -54,14 +53,16 @@ const PageContainer = styled.div`
     margin-top: 30px;
     padding-top: 70px;
     flex-wrap: wrap;
-`
+`;
+
 const ListContainer = styled.div`
     width: 330px;
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
     padding: 10px;
-`
+`;
+
 const MovieContainer = styled.div`
     width: 145px;
     height: 210px;
@@ -75,4 +76,4 @@ const MovieContainer = styled.div`
         width: 130px;
         height: 190px;
     }
-`
+`;
