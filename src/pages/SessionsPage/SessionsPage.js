@@ -13,7 +13,7 @@ export default function SessionsPage() {
 
     useEffect(() => {
 
-        const promise = axios.get(`https://mock-api.driven.com.br/api/v8/cineflex/movies/${idFilme}/showtimes`);
+        const promise = axios.get(`${process.env.REACT_APP_API_URL}/movies/${idFilme}/showtimes`);
 
         promise.then((res) => {
             setMovieDate(res.data.days);

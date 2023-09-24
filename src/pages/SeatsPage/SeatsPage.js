@@ -17,7 +17,7 @@ export default function SeatsPage({ movie, setMovie, day, setDay, infoSeats, set
     const [numSeats, setNumSeats] = useState([]);
 
     useEffect(() => {
-        const promise = axios.get(`https://mock-api.driven.com.br/api/v8/cineflex/showtimes/${idSessao}/seats`);
+        const promise = axios.get(`${process.env.REACT_APP_API_URL}/showtimes/${idSessao}/seats`);
 
         promise.then(res => {
             setInfoSeats(res.data);

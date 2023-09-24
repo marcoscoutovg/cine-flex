@@ -9,7 +9,7 @@ export default function HomePage() {
 
     useEffect(() => {
 
-        const promise = axios.get("https://mock-api.driven.com.br/api/v8/cineflex/movies");
+        const promise = axios.get(`${process.env.REACT_APP_API_URL}/movies`);
 
         promise.then((res) => {
             setMovieList(res.data)
