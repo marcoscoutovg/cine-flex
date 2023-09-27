@@ -16,8 +16,8 @@ O Cineflex é uma aplicação web inovadora que torna a experiência de ir ao ci
 
 Cineflex utiliza uma API externa.
 
-Clone o repositório: git clone https://github.com/marcoscoutovg/cine-flex.git
-Instale as dependências para o repositório usando npm install
-Crie um arquivo .env na raiz do diretório, contendo as seguintes variáveis:
-REACT_APP_API_URL=https://mock-api.driven.com.br/api/v8/cineflex
-Inicie o servidor do front-end executando npm start.
+<p>* Clone o repositório: git clone https://github.com/marcoscoutovg/cine-flex.git</p>
+<p>* Instale as dependências para o repositório usando npm install</p>
+<p>* Crie um arquivo .env na raiz do diretório, contendo as seguintes variáveis:</p>
+<p>* REACT_APP_API_URL=https://mock-api.driven.com.br/api/v8/cineflex</p>
+<p>* Inicie o servidor do front-end executando npm start.</p>
